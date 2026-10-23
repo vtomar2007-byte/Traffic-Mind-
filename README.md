@@ -5,6 +5,7 @@ An AI-powered traffic intelligence platform for vehicle detection, multi-object 
 TrafficMind combines computer vision, machine learning, and interactive analytics to transform traffic footage into actionable insights for smarter traffic management.
 
 «Project Status: In Development 🚧»
+
  ```mermaid
 "Python" (https://img.shields.io/badge/Python-3776AB?style=for-the-badge&logo=python&logoColor=white)
 "React" (https://img.shields.io/badge/React-20232A?style=for-the-badge&logo=react&logoColor=61DAFB)
