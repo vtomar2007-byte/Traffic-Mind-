@@ -17,9 +17,9 @@
 - The production project database still contains old demo rows, but the dashboard API reports an empty state until a real video analysis exists; no production database rows were removed.
 - Browser visual rendering and click-through upload were not independently tested. HTTP/API behavior was tested directly; no live camera, speed measurement, or geospatial traffic map is claimed.
 
-## GitHub preparation status
+## GitHub status
 
-- The local branch is `master`; the repository has no commits and no configured remote.
-- No commit or push has been made.
+- The local `main` branch tracks `origin/main` at `https://github.com/vtomar2007-byte/Traffic-Mind-`.
+- Commit `3829b4b` (`Add TrafficMind traffic analytics app`) was pushed to `main` using author `Vivek Tomar <v.tomar2007@gmail.com>`.
 - `.env.example` contains configuration defaults only. The local `.env`, virtual environment, data directory, model weights, test dependency cache, and generated video outputs are excluded by `.gitignore`.
-- The traffic sample is a stylized synthetic local test clip (9,639,063 bytes). It is excluded from the GitHub snapshot as requested.
+- The optional traffic sample remains on the development computer (9,639,063 bytes) but is excluded from Git; a fresh clone works without it.
