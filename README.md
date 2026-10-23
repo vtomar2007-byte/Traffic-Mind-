@@ -6,13 +6,13 @@ TrafficMind combines computer vision, machine learning, and interactive analytic
 
 «Project Status: In Development 🚧»
 
- ```mermaid
+ 
 "Python" (https://img.shields.io/badge/Python-3776AB?style=for-the-badge&logo=python&logoColor=white)
 "React" (https://img.shields.io/badge/React-20232A?style=for-the-badge&logo=react&logoColor=61DAFB)
 "FastAPI" (https://img.shields.io/badge/FastAPI-009688?style=for-the-badge&logo=fastapi&logoColor=white)
 "YOLO" (https://img.shields.io/badge/YOLO-Computer_Vision-8A2BE2?style=for-the-badge)
 "Status" (https://img.shields.io/badge/Status-In_Development-orange?style=for-the-badge)
-```
+
 
 ✨ Key Features
 
