@@ -1,0 +1,52 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyd
+.venv/
+venv/
+env/
+ENV/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+
+# Secrets and local configuration
+.env
+.env.*
+!.env.example
+
+# Local data, uploaded videos, derived previews, databases, logs, and weights
+/data/
+/uploads/
+/outputs/
+*.db
+*.sqlite
+*.sqlite3
+*.log
+*.pt
+*.pth
+*.onnx
+*.engine
+*.weights
+
+# Keep local video clips private; sample clips are optional local-only files
+*.mp4
+*.m4v
+*.mov
+*.avi
+*.mkv
+*.webm
+
+# Editor / OS files
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+.test-tmp/
+.test-*/
+.test-deps/
+
+.trafficmind-tmp/

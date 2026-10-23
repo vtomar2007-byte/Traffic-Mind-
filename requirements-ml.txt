@@ -1,0 +1,5 @@
+# Optional only; PyTorch and model weights can require substantial downloads.
+ultralytics>=8.3,<9.0
+# Ultralytics depends on opencv-python; use the desktop Windows build (not headless).
+opencv-python>=4.10,<5.0
+lap>=0.5.12

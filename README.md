@@ -1,274 +1,114 @@
-🚦 TrafficMind — Smart Traffic Analytics & Prediction
- 
-An AI-powered traffic intelligence platform for vehicle detection, multi-object tracking, congestion monitoring, and short-term traffic forecasting.
+# TrafficMind
 
-TrafficMind combines computer vision, machine learning, and interactive analytics to transform traffic footage into actionable insights for smarter traffic management.
+TrafficMind is a local-first student project for traffic video analytics and prediction. The dashboard retains the original HTML/CSS/JavaScript interface. The local sample video is intentionally excluded from GitHub; the dashboard and upload workflow work without it. A small FastAPI service adds local persistence, analytics endpoints, baseline forecasts, alerts, CSV reports, and an optional YOLO/ByteTrack video-processing path.
 
-«Project Status: In Development 🚧»
+All seeded values are marked as **demo data**. Processing results come only from videos explicitly submitted to the local API. They describe the analyzed clip and virtual counting line; they are not live camera feeds, calibrated speed measurements, or city-wide traffic statistics. Forecasts are moving-average baselines, not AI predictions.
 
- 
-"Python" (https://img.shields.io/badge/Python-3776AB?style=for-the-badge&logo=python&logoColor=white)
-"React" (https://img.shields.io/badge/React-20232A?style=for-the-badge&logo=react&logoColor=61DAFB)
-"FastAPI" (https://img.shields.io/badge/FastAPI-009688?style=for-the-badge&logo=fastapi&logoColor=white)
-"YOLO" (https://img.shields.io/badge/YOLO-Computer_Vision-8A2BE2?style=for-the-badge)
-"Status" (https://img.shields.io/badge/Status-In_Development-orange?style=for-the-badge)
+## Requirements
 
+- Windows 10/11
+- Python 3.11 or 3.12 (64-bit recommended)
+- Browser with HTML5 video support
+- Git is optional for running the project
 
-✨ Key Features
+The static dashboard still opens with a double-click on `index.html`. The local API, database persistence, alert acknowledgement, API reports, and video analysis require the server described below. No Node.js/npm is required. SQLite is included through Python dependencies.
 
-- 🚗 Vehicle Detection: Detect cars, motorcycles, buses, and trucks using YOLO.
-- 🎯 Object Tracking: Track vehicles across video frames with persistent tracking IDs using ByteTrack or BoT-SORT.
-- 📊 Traffic Analytics: Visualize vehicle counts, traffic volume, vehicle categories, and peak traffic periods.
-- 🚥 Congestion Detection: Estimate traffic density and identify potentially congested areas.
-- 🔮 Traffic Forecasting: Predict upcoming traffic volume using historical counts and machine learning.
-- 🗺️ Congestion Map: Visualize camera locations and congestion levels.
-- 🔔 Smart Alerts: Highlight unusual traffic patterns and congestion threshold events.
-- 📈 Interactive Dashboard: Explore traffic insights through charts, metrics, and monitoring panels.
+## Setup on Windows
 
-🖥️ Dashboard Modules
+Open PowerShell in the repository directory. If Python is not installed, install Python 3.12 from python.org, enable the launcher/PATH option, and reopen PowerShell. Check with `py -3.12 --version`.
 
-Module| Description
-Overview| Traffic KPIs, recent alerts, and traffic trends
-Live Monitoring| Video playback, vehicle detection, and tracking
-Analytics| Traffic volume, vehicle distribution, and peak-hour analysis
-Predictions| Short-term traffic volume forecasting
-Congestion Map| Camera locations and congestion visualization
-Alerts & Incidents| Traffic events and severity management
-System Management| Camera status and ML model configuration
-
-🧠 Machine Learning Pipeline
-
-1. Video Input: Load an uploaded traffic video or a supported camera stream.
-2. Preprocessing: Read video frames using OpenCV.
-3. Detection: Run YOLO inference to detect and classify vehicles.
-4. Tracking: Associate detections across frames using ByteTrack or BoT-SORT.
-5. Traffic Analytics: Aggregate vehicle counts, movement, and density over time.
-6. Forecasting: Use historical traffic features to predict upcoming traffic volume.
-7. Visualization: Deliver processed results to the dashboard through a FastAPI backend.
-
-🛠️ Tech Stack
-
-Frontend
-
-- React
-- TypeScript
-- Vite
-- Tailwind CSS
-- shadcn/ui
-- Recharts
-- React Router
-- Lucide Icons
-
-Backend & Machine Learning
-
-- Python
-- FastAPI
-- OpenCV
-- Ultralytics YOLO
-- ByteTrack / BoT-SORT
-- Scikit-learn
-- XGBoost
-- Pandas and NumPy
-
-Visualization & Deployment
-
-- Leaflet
-- OpenStreetMap
-- Docker (planned or optional)
-
-🏗️ Architecture
-
-TrafficMind processes traffic footage through a computer vision pipeline and delivers traffic insights through an interactive dashboard.
-
-```mermaid
-flowchart TD
-    A["Traffic Video / Camera Stream"] --> B["OpenCV Frame Processing"]
-    B --> C["YOLO Vehicle Detection"]
-    C --> D["ByteTrack / BoT-SORT"]
-    D --> E["Traffic Feature Extraction"]
-    E --> F["Traffic Analytics"]
-    E --> G["Traffic Volume Forecasting"]
-    F --> H["FastAPI Backend"]
-    G --> H
-    H --> I["React Dashboard"]
-    I --> J["Charts, Alerts & Predictions"]
+```powershell
+Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass
+.\setup.ps1
+.\run.ps1
 ```
 
-Processing Pipeline
+Open [http://127.0.0.1:8000](http://127.0.0.1:8000). The first server start creates a local SQLite database in `data/` and shows an empty analytics state until a video is analyzed. Existing seeded demo rows are preserved in the database but are not used for dashboard results. Keep the server window open; stop it with `Ctrl+C`. The virtual environment, database, uploaded videos, and generated previews are local and ignored by Git.
 
-1. Video Input: Upload a traffic video or connect a supported camera stream.
-2. Frame Processing: OpenCV reads and prepares video frames.
-3. Vehicle Detection: YOLO detects cars, motorcycles, buses, and trucks.
-4. Object Tracking: ByteTrack or BoT-SORT tracks vehicles across frames.
-5. Feature Extraction: Calculate vehicle counts, traffic volume, and density.
-6. Analytics & Forecasting: Analyze traffic patterns and forecast future vehicle volume.
-7. Dashboard: FastAPI delivers processed results to the React frontend.
+For manual setup, run these commands from the project root:
+
+```powershell
+py -3.12 -m venv .venv
+.\.venv\Scripts\python.exe -m pip install -r requirements.txt -r requirements-dev.txt
+.\.venv\Scripts\python.exe -m uvicorn backend.main:app --host 127.0.0.1 --port 8000
+```
+
+If the `py` launcher is unavailable but `python` works, use `python` in place of `py -3.12`. `setup.ps1` checks both options and installs only into the project `.venv`. Do not run PowerShell as administrator.
+
+## Dashboard behavior
+
+- **Overview, Live Monitoring, Analytics, Predictions, Congestion Map, Alerts, System:** dashboard navigation and accessible keyboard controls.
+- **Analytics:** hourly persisted line crossings and class totals; date ranges can have sparse buckets because video observations are not extrapolated into missing data.
+- **Forecast:** transparent three-bucket moving-average baseline. Real video-derived history is considered insufficient until there are at least 24 hourly buckets spanning three dates. MAE/RMSE are not reported because a held-out evaluation set is not included.
+- **Congestion:** configurable virtual-line crossing thresholds are a flow proxy, not measured road density or speed.
+- **Local preview:** choose a video from this device for browser-only preview, even when the optional bundled sample is absent. With the API running, analysis is enabled only if optional ML dependencies and local weights are configured. Choosing **Analyze locally** sends the selected file only to this local API. Uploads are limited by `TRAFFICMIND_MAX_UPLOAD_MB` (default 150 MB), and sampled processing is bounded by `TRAFFICMIND_MAX_VIDEO_FRAMES` (default 3000).
+- **CSV:** with the API connected, the CSV is generated from persisted video-analysis results. Direct-file mode exports a clearly labeled empty-state report.
+- **Optional local sample:** if `assets/traffic.mp4` is available on this computer, **Process optional sample** can analyze it. Video files are ignored by Git, so this sample is absent from a fresh clone. Otherwise, choose a video from your device; the sample action stays disabled when its file is absent.
+
+If the API is unavailable, the interface shows an empty analytics state. Preview a video selected from your device; the optional sample may be absent. It does not substitute sample values. The API status appears in the System section.
+
+## Optional local vehicle detection
+
+The core installation does not install PyTorch, OpenCV, YOLO, or model weights. For CPU-only Windows inference, install PyTorch from its CPU wheel index, then install the optional OpenCV and Ultralytics requirements:
+
+```powershell
+.\.venv\Scripts\python.exe -m pip install torch torchvision --index-url https://download.pytorch.org/whl/cpu
+.\.venv\Scripts\python.exe -m pip install -r requirements-ml.txt
+```
+
+To enable the bundled COCO-compatible YOLO11n weights, download the official Ultralytics asset locally; the file is ignored by Git and is never uploaded by TrafficMind:
+
+```powershell
+New-Item -ItemType Directory -Force models | Out-Null
+Invoke-WebRequest -Uri https://github.com/ultralytics/assets/releases/download/v8.3.0/yolo11n.pt -OutFile models/trafficmind.pt
+```
+
+Alternatively, set `TRAFFICMIND_MODEL_PATH` in `.env` to an existing local weights file. No weights download occurs automatically. Vehicle KPIs count unique tracked objects from completed videos; time-series charts, congestion proxies, and threshold alerts use actual virtual-line crossings. The implementation filters COCO classes `car`, `motorcycle`, `bus`, and `truck` and uses ByteTrack IDs. Speed is not estimated. The model's accuracy has not been evaluated by this project; validate it against a labeled dataset before using the results beyond a demo.
+
+## Configuration
+
+Copy `.env.example` to `.env` to adjust local settings. Defaults bind the server to `127.0.0.1` and use SQLite in `data/`. Do not put secrets in `.env.example` or commit `.env`. The server exposes no authentication and is intended for local development only; do not bind it to a public interface or expose it to the internet.
+
+Important options: `TRAFFICMIND_DATABASE_URL`, `TRAFFICMIND_DATA_DIR`, `TRAFFICMIND_MODEL_PATH`, `TRAFFICMIND_MAX_UPLOAD_MB`, `TRAFFICMIND_MAX_VIDEO_FRAMES`, `TRAFFICMIND_PROCESS_EVERY_N_FRAMES`, `TRAFFICMIND_CONFIDENCE`, and `TRAFFICMIND_COUNT_LINE_RATIO`. Use a fresh backup before manually changing a database URL. This student milestone uses SQLAlchemy `create_all`; it does not include schema migration tooling.
+
+## API reference
+
+Interactive local API docs are available at [http://127.0.0.1:8000/docs](http://127.0.0.1:8000/docs) while the server is running. Main endpoints:
+
+- `GET /api/health`, `GET /api/ready`, `GET /api/system/status`
+- `GET /api/dashboard/overview`, `GET /api/cameras`, `POST /api/cameras`
+- `GET /api/analytics/traffic?range=24h|7d|30d`, `GET /api/congestion`
+- `POST /api/forecasts`, `GET /api/forecasts`
+- `GET /api/alerts`, `PATCH /api/alerts/{id}/acknowledge`
+- `POST /api/jobs`, `GET /api/jobs`, `GET /api/jobs/{id}`, `POST /api/jobs/{id}/cancel`, `DELETE /api/jobs/{id}`
+- `GET /api/jobs/{id}/preview`, `GET /api/reports/traffic.csv`
+
+## Tests and troubleshooting
+
+Run the API and data tests with:
+
+```powershell
+.\test.ps1
+```
+
+If the browser is opened directly from `index.html`, local preview and navigation work, but the API is not queried and the dashboard stays empty. For local video analysis, use the `127.0.0.1:8000` address. If a port conflict occurs, stop the other local process or change the port in `.env` and `run.ps1`. If the bundled MP4 does not play in a browser, try another H.264 MP4 clip; codec support depends on the browser and installed media components.
+
+## Project structure
 
 ```text
-📁 Project Structure
-
-TrafficMind/
-├── frontend/
-│   ├── public/
-│   ├── src/
-│   │   ├── components/
-│   │   ├── pages/
-│   │   ├── services/
-│   │   ├── hooks/
-│   │   ├── types/
-│   │   ├── App.tsx
-│   │   └── main.tsx
-│   ├── index.html
-│   ├── package.json
-│   ├── tsconfig.json
-│   └── vite.config.ts
-│
-├── backend/
-│   ├── app/
-│   │   ├── routes/
-│   │   ├── services/
-│   │   ├── models/
-│   │   ├── schemas/
-│   │   └── main.py
-│   └── requirements.txt
-│
-├── data/
-├── models/
-├── tests/
-├── assets/
-├── .env.example
-├── .gitignore
-└── README.md
+backend/                 FastAPI application, SQLAlchemy models, analytics, forecasts, video jobs
+backend/api/             REST endpoints, upload validation, CSV export
+backend/services/        detection, analytics, forecast, background job orchestration
+assets/README.md        Notes for the optional, locally ignored sample video
+index.html               Existing dashboard markup
+app.js, styles.css       Existing dashboard interactions and styles
+api-client.js            Same-origin API helper
+backend-ui.js            Progressive API-backed dashboard integration
+setup.ps1, run.ps1       Windows-local environment setup and server launch
+test.ps1, tests/          Local checks and test suite
+requirements*.txt        Core, development, and optional ML dependency sets
 ```
 
-📂 Directory Description
+## Current limitations and next steps
 
-Directory| Purpose
-"frontend/src/components/"| Reusable UI components, cards, charts, and tables
-"frontend/src/pages/"| Dashboard, live monitoring, analytics, and prediction pages
-"frontend/src/services/"| API calls and backend integration
-"frontend/src/hooks/"| Reusable React hooks
-"frontend/src/types/"| TypeScript interfaces and type definitions
-"backend/app/routes/"| FastAPI endpoints
-"backend/app/services/"| Video processing and traffic analysis logic
-"backend/app/models/"| ML inference and forecasting modules
-"backend/app/schemas/"| API request and response schemas
-"data/"| Dataset instructions or locally stored sample data
-"models/"| Model configuration and locally stored model files
-"tests/"| Automated tests
-"assets/"| Screenshots, diagrams, and demo images
-
-«Note: This is the proposed project structure. Create these directories as you implement the application, and keep the README consistent with the actual repository contents.»
-
-🚀 Getting Started
-
-Prerequisites
-
-- Node.js and npm
-- Python 3.10 or a compatible version supported by your selected ML dependencies
-- Git
-- A webcam or sample traffic video for testing
-- Optional: NVIDIA GPU with compatible drivers and CUDA for accelerated inference
-
-1. Clone the Repository
-
-git clone https://github.com/vtomar2007-byte/TrafficMind.git
-cd TrafficMind
-
-2. Start the Frontend
-
-cd frontend
-npm install
-npm run dev
-
-Open the local URL displayed by Vite in your terminal.
-
-3. Set Up the Backend
-
-Open another terminal:
-
-cd backend
-python -m venv .venv
-
-Activate the environment.
-
-Windows PowerShell
-
-.\.venv\Scripts\Activate.ps1
-
-macOS / Linux
-
-source .venv/bin/activate
-
-Install the backend dependencies:
-
-pip install -r requirements.txt
-
-Start FastAPI:
-
-uvicorn app.main:app --reload
-
-If configured, the API documentation will be available at:
-
-http://127.0.0.1:8000/docs
-
-These commands assume the corresponding files and endpoints have been implemented.
-
-📊 Model Evaluation
-
-TrafficMind should be evaluated using metrics appropriate to each task.
-
-Task| Suggested Metrics
-Vehicle Detection| Precision, Recall, mAP@50, mAP@50–95
-Vehicle Tracking| HOTA, IDF1, ID switches
-Traffic Forecasting| MAE, RMSE, MAPE where appropriate
-Congestion Classification| Precision, Recall, F1-score, confusion matrix
-System Performance| FPS, inference latency, processing throughput
-
-🔮 Roadmap
-
-- [x] Project concept and system architecture
-- [ ] Responsive multi-page dashboard
-- [ ] YOLO vehicle detection integration
-- [ ] Persistent vehicle tracking
-- [ ] Vehicle counting and traffic analytics
-- [ ] Congestion detection
-- [ ] Short-term traffic forecasting
-- [ ] Interactive congestion map
-- [ ] FastAPI integration and testing
-- [ ] Docker deployment
-- [ ] Model evaluation and performance optimization
-
-Update these checkboxes as features are actually completed.
-
-🔐 Responsible Use
-
-- Use authorized traffic footage and camera feeds.
-- Avoid collecting or storing unnecessary personal information.
-- Do not treat model predictions as guaranteed outcomes.
-- Clearly distinguish demo data from real measurements and model outputs.
-
-🤝 Contributing
-
-Contributions, bug reports, feature suggestions, and improvements are welcome.
-
-1. Fork the repository.
-2. Create a feature branch.
-3. Commit your changes.
-4. Open a pull request describing the improvement.
-
-📄 License
-
-MIT License — choosealicense.com⁠. All rights remain with the copyright holder.
-
-👨‍💻 Author
-
-Vivek Tomar 
-
-- GitHub: "vtomar2007-byte" (https://github.com/vtomar2007-byte)
-- LinkedIn: www.linkedin.com/in/vivek-tomar-1957bb359
-
-
----
-
-TrafficMind — Turning Traffic Data into Intelligent Decisions. 🚦
+This is a single-user local student app. It has no login, role management, live camera/RTSP ingest, model training, dataset labels, model accuracy evaluation, migrations, or production deployment configuration. SQLite and a single background worker are suitable for a demo, not concurrent production traffic. Next, collect/document a lawful dataset, evaluate detection and forecasting against held-out labels, add migrations and authentication, then consider a production database and deployment controls.
